@@ -14,20 +14,19 @@ xfs_growfs /var
 yum install fontconfig java-17-openjdk -y
 
 #This repository We are using for Jenkins only. So not below installation steps.
-
 # #Installing Terraform on Jenkins Agent
-# yum install -y yum-utils
-# yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
-# yum -y install terraform
+yum install -y yum-utils
+yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+yum -y install terraform
 
 
 # #Node JS installation
-# dnf module disable nodejs -y
-# dnf module enable nodejs:20 -y
-# dnf install nodejs -y
+dnf module disable nodejs -y
+dnf module enable nodejs:20 -y
+dnf install nodejs -y
 
 # #Installing zip in Jenins Agent
-# yum install zip -y
+yum install zip -y
 
 
 # # docker

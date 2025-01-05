@@ -48,36 +48,36 @@ module "jenkins_agent" {
 
 }
 
-# The tools key is generated for nexus server.
-# resource "aws_key_pair" "tools" {
-#     key_name = "tools-key"
-#     #you can paste the public key directly like this
-#     #public_key = file("~/.ssh/openssh.pub")
-#     # ~ means windows home directory
-#     public_key = "${file("~/.ssh/tools.pub")}"
+#The tools key is generated for nexus server.
+resource "aws_key_pair" "tools" {
+    key_name = "tools-key"
+    #you can paste the public key directly like this
+    #public_key = file("~/.ssh/openssh.pub")
+    # ~ means windows home directory
+    public_key = "${file("~/.ssh/tools.pub")}"
 
-# }
+}
 
-# module "nexus" {
-#   source  = "terraform-aws-modules/ec2-instance/aws"
-#   name = "nexus"
+module "nexus" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  name = "nexus"
 
-#   instance_type          = "t3.medium"
-#   vpc_security_group_ids = ["sg-06b1b57b365846051"] #replace your SG
-#   ami                   = data.aws_ami.nexus_ami_info.id
-#   key_name = aws_key_pair.tools.key_name
+  instance_type          = "t3.medium"
+  vpc_security_group_ids = ["sg-06b1b57b365846051"] #replace your SG
+  ami                   = data.aws_ami.nexus_ami_info.id
+  key_name = aws_key_pair.tools.key_name
    
-#     root_block_device = [
-#     {
-#       volume_type = "gp3"
-#       volume_size = 50
-#     }
-#     ]
+    root_block_device = [
+    {
+      volume_type = "gp3"
+      volume_size = 50
+    }
+    ]
   
-#   tags = {
-#     Name   = "Nexus"
-#   }
-# }
+  tags = {
+    Name   = "Nexus"
+  }
+}
 # module "sonarqube" {
 #   source  = "terraform-aws-modules/ec2-instance/aws"
 #   name = "sonarqube"
@@ -124,16 +124,16 @@ records = [
         ]
         #allow_overwrite = true
        }
-       #,
-      #   {
-      #   name = "nexus"
-      #   type = "A"
-      #   ttl  = 1
-      #   records = [
-      #     module.nexus.public_ip
-      #   ]
-      #   #allow_overwrite = true
-      # },
+       ,
+        {
+        name = "nexus"
+        type = "A"
+        ttl  = 1
+        records = [
+          module.nexus.public_ip
+        ]
+        #allow_overwrite = true
+      } #,
       # {
       #   name = "sonarqube"
       #   type = "A"
