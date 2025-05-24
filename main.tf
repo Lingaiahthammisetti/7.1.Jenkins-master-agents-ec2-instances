@@ -1,14 +1,10 @@
 module "jenkins_master" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   name = "tf-jenkins-master"
-
   instance_type          = "t3.small"
-  vpc_security_group_ids = ["sg-06b1b57b365846051"] #replace your SG
-   ami                   = data.aws_ami.ami_info.id
-  #ami                    = "ami-041e2ea9402c46c32"
-  #user_data              = file("install_jenkins_master.sh")
-  user_data               = file("${path.module}/install_jenkins_master.sh")
-
+  vpc_security_group_ids = [var.allow_everything] #replace your SG
+  ami                    = data.aws_ami.ami_info.id
+  user_data              = file("${path.module}/install_jenkins_master.sh")
   tags = {
     Name   = "Jenkins-Master"
   }
@@ -24,14 +20,10 @@ module "jenkins_master" {
 }
 module "jenkins_agent" {
   source  = "terraform-aws-modules/ec2-instance/aws"
-
   name = "tf-jenkins-agent"
-
   instance_type          = "t3.small"
-  vpc_security_group_ids = ["sg-06b1b57b365846051"] #replace your SG
-  ami                   = data.aws_ami.ami_info.id
-  #ami                    = "ami-041e2ea9402c46c32"
-  #user_data              = file("install_jenkins_agent.sh")
+  vpc_security_group_ids = [var.allow_everything] #replace your SG
+  ami                    = data.aws_ami.ami_info.id
   user_data               = file("${path.module}/install_jenkins_agent.sh")
 
   tags = {
@@ -48,42 +40,42 @@ module "jenkins_agent" {
 
 }
 
-#The tools key is generated for nexus server.
-resource "aws_key_pair" "tools" {
-    key_name = "tools-key"
-    #you can paste the public key directly like this
-    #public_key = file("~/.ssh/openssh.pub")
-    # ~ means windows home directory
-    public_key = "${file("~/.ssh/tools.pub")}"
+# #The tools key is generated for nexus server.
+# resource "aws_key_pair" "tools" {
+#     key_name = "tools-key"
+#     #you can paste the public key directly like this
+#     #public_key = file("~/.ssh/openssh.pub")
+#     # ~ means windows home directory
+#     public_key = "${file("~/.ssh/tools.pub")}"
 
-}
+# }
 
-module "nexus" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  name = "nexus"
+# module "nexus" {
+#   source  = "terraform-aws-modules/ec2-instance/aws"
+#   name = "nexus"
 
-  instance_type          = "t3.medium"
-  vpc_security_group_ids = ["sg-06b1b57b365846051"] #replace your SG
-  ami                   = data.aws_ami.nexus_ami_info.id
-  key_name = aws_key_pair.tools.key_name
+#   instance_type          = "t3.medium"
+#   vpc_security_group_ids = [var.allow_everything] #replace your SG
+#   ami                    = data.aws_ami.nexus_ami_info.id
+#   key_name               = aws_key_pair.tools.key_name
    
-    root_block_device = [
-    {
-      volume_type = "gp3"
-      volume_size = 50
-    }
-    ]
+#     root_block_device = [
+#     {
+#       volume_type = "gp3"
+#       volume_size = 50
+#     }
+#     ]
   
-  tags = {
-    Name   = "Nexus"
-  }
-}
+#   tags = {
+#     Name   = "Nexus"
+#   }
+# }
 # module "sonarqube" {
 #   source  = "terraform-aws-modules/ec2-instance/aws"
 #   name = "sonarqube"
 
 #   instance_type          = "t3.medium"
-#   vpc_security_group_ids = ["sg-06b1b57b365846051"] #replace your SG
+#   vpc_security_group_ids = [var.allow_everything] #replace your SG
 #   ami                   = data.aws_ami.sonarqube_ami_info.id
 #   #ami                   = "ami-0649f08ef033b0cc2"
 #   key_name = aws_key_pair.tools.key_name
@@ -124,16 +116,16 @@ records = [
         ]
         #allow_overwrite = true
        }
-       ,
-        {
-        name = "nexus"
-        type = "A"
-        ttl  = 1
-        records = [
-          module.nexus.public_ip
-        ]
-        #allow_overwrite = true
-      } #,
+      #  ,
+      #   {
+      #   name = "nexus"
+      #   type = "A"
+      #   ttl  = 1
+      #   records = [
+      #     module.nexus.public_ip
+      #   ]
+      #   #allow_overwrite = true
+      # } #,
       # {
       #   name = "sonarqube"
       #   type = "A"
@@ -145,16 +137,3 @@ records = [
       # }
    ]
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
